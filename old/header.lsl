@@ -1,0 +1,284 @@
+// These are the font metrics, with the LSL optimised ones on the left
+float UPM = 961.0; // 1000;
+float Ascender = 1.0; // 776;
+float CapsHeight = 0.91363163371488033298647242455775; // 693;
+float Xheight = 0.73361082206035379812695109261186; // 520;
+float Baseline = 0.19250780437044745057232049947971;
+float Underline = 0.02393340270551508844953173777315; // -162;
+float UnderlineThickness = 0.08;
+float Descender = 0; // -185;
+
+// Ubuntu Regular
+// 1024x1024 Textures that have font size at 66px and font line height at 64px
+#define TEXTURE_FONT_1 "06384125-f81c-d450-a4b2-58408dd9dc8c"
+#define TEXTURE_FONT_2 "1f09fe2c-58b2-0b20-a44e-d34ed9e750d2"
+#define TEXTURE_FONT_3 "0c684f6f-db98-0b73-7b8c-9ccfba7dcf9d"
+
+// Thin white strip to make underline shorter, eight because it's 1/8th of the texture tall
+#define TEXTURE_EIGHT "876a12ca-928e-baf1-a35b-f3aab5db95bc"
+
+
+vector Glyphs(string Glyph) {
+    if(Glyph == "e") return <-.25, 0.093750, 2.581686>;
+    if(Glyph == "t") return <0.25, 0.156250, 2.418314>;
+    if(Glyph == "a") return <-.25, 0.343750, 2.543184>;
+    if(Glyph == "o") return <0.25, 0.468750, 2.613944>;
+    if(Glyph == "i") return <-.25, -0.156250, 2.263268>;
+    if(Glyph == "n") return <-.25, -0.468750, 2.597295>;
+    if(Glyph == "s") return <0.25, 0.218750, 2.464100>;
+    if(Glyph == "r") return <0.25, 0.281250, 2.401665>;
+    if(Glyph == "h") return <-.25, -0.093750, 2.594173>;
+    if(Glyph == "l") return <-.25, -0.343750, 2.284079>;
+    if(Glyph == "d") return <-.25, 0.156250, 2.612903>;
+    if(Glyph == "c") return <-.25, 0.218750, 2.483871>;
+    if(Glyph == "u") return <0.25, 0.093750, 2.597295>;
+    if(Glyph == "m") return <-.25, -0.406250, 2.895942>;
+    if(Glyph == "f") return <-.25, 0.031250, 2.401665>;
+    if(Glyph == "p") return <0.25, 0.406250, 2.612903>;
+    if(Glyph == "g") return <-.25, -0.031250, 2.601457>;
+    if(Glyph == "w") return <0.25, -0.031250, 2.808533>;
+    if(Glyph == "y") return <0.25, -0.156250, 2.517169>;
+    if(Glyph == "b") return <-.25, 0.281250, 2.612903>;
+    if(Glyph == ",") return <-.25, -0.343750, 0.255983>;
+    if(Glyph == ".") return <-.25, -0.468750, 0.255983>;
+    if(Glyph == "v") return <0.25, 0.031250, 2.522372>;
+    if(Glyph == "k") return <-.25, -0.281250, 2.543184>;
+    if(Glyph == "(") return <-.25, -0.093750, 0.337149>;
+    if(Glyph == ")") return <-.25, -0.156250, 0.337149>;
+    if(Glyph == "_") return <-.25, 0.468750, 2.511967>;
+    if(Glyph == ";") return <0.25, -0.281250, 0.255983>;
+    if(Glyph == "\"") return <-.25, 0.406250, 0.434964>;
+    if(Glyph == "=") return <0.25, -0.406250, 0.586889>;
+    if(Glyph == "'") return <-.25, -0.031250, 0.250780>;
+    if(Glyph == "-") return <-.25, -0.406250, 0.311134>;
+    if(Glyph == "x") return <0.25, -0.093750, 2.531738>;
+    if(Glyph == "/") return <0.25, 0.468750, 0.399584>;
+    if(Glyph == "0") return <0.25, 0.406250, 0.586889>;
+    if(Glyph == "$") return <-.25, 0.281250, 0.586889>;
+    if(Glyph == "£") return <-.25, 0.218750, 0.586889>;
+    if(Glyph == "€") return <-.25, 0.156250, 0.586889>;
+    if(Glyph == "*") return <-.25, -0.218750, 0.499480>;
+    if(Glyph == "1") return <0.25, 0.343750, 0.586889>;
+    if(Glyph == "j") return <-.25, -0.218750, 2.263268>;
+    if(Glyph == ":") return <0.25, -0.218750, 0.255983>;
+    if(Glyph == "{") return <0.25, -0.281250, 2.346514>;
+    if(Glyph == "}") return <0.25, -0.406250, 2.346514>;
+    if(Glyph == ">") return <0.25, -0.468750, 0.586889>;
+    if(Glyph == "q") return <0.25, 0.343750, 2.612903>;
+    if(Glyph == "[") return <0.25, -0.281250, 1.342352>;
+    if(Glyph == "]") return <0.25, -0.406250, 1.342352>;
+    if(Glyph == "2") return <0.25, 0.281250, 0.586889>;
+    if(Glyph == "z") return <0.25, -0.218750, 2.490114>;
+    if(Glyph == "!") return <-.25, 0.468750, 0.287201>;
+    if(Glyph == "<") return <0.25, -0.343750, 0.586889>;
+    if(Glyph == "?") return <-.25, 0.468750, 1.420395>;
+    if(Glyph == "3") return <0.25, 0.218750, 0.586889>;
+    if(Glyph == "+") return <-.25, -0.281250, 0.586889>;
+    if(Glyph == "5") return <0.25, 0.093750, 0.586889>;
+    if(Glyph == "\\") return <0.25, -0.343750, 1.399584>;
+    if(Glyph == "4") return <0.25, 0.156250, 0.586889>;
+    if(Glyph == "#") return <-.25, 0.343750, 0.694069>;
+    if(Glyph == "@") return <-.25, 0.406250, 1.988554>;
+    if(Glyph == "|") return <0.25, -0.343750, 2.290323>;
+    if(Glyph == "6") return <0.25, 0.031250, 0.586889>;
+    if(Glyph == "9") return <0.25, -0.156250, 0.586889>;
+    if(Glyph == "8") return <0.25, -0.093750, 0.586889>;
+    if(Glyph == "7") return <0.25, -0.031250, 0.586889>;
+    if(Glyph == "A") return <-.25, 0.343750, 1.689906>;
+    if(Glyph == "B") return <-.25, 0.281250, 1.669095>;
+    if(Glyph == "C") return <-.25, 0.218750, 1.645161>;
+    if(Glyph == "D") return <-.25, 0.156250, 1.741935>;
+    if(Glyph == "E") return <-.25, 0.093750, 1.594173>;
+    if(Glyph == "F") return <-.25, 0.031250, 1.558793>;
+    if(Glyph == "G") return <-.25, -0.031250, 1.699272>;
+    if(Glyph == "H") return <-.25, -0.093750, 1.733611>;
+    if(Glyph == "I") return <-.25, -0.156250, 1.279917>;
+    if(Glyph == "J") return <-.25, -0.218750, 1.520291>;
+    if(Glyph == "K") return <-.25, -0.281250, 1.654526>;
+    if(Glyph == "L") return <-.25, -0.343750, 1.540062>;
+    if(Glyph == "M") return <-.25, -0.406250, 1.906348>;
+    if(Glyph == "N") return <-.25, -0.468750, 1.757544>;
+    if(Glyph == "O") return <0.25, 0.468750, 1.809573>;
+    if(Glyph == "P") return <0.25, 0.406250, 1.632674>;
+    if(Glyph == "Q") return <0.25, 0.343750, 1.809573>;
+    if(Glyph == "R") return <0.25, 0.281250, 1.654526>;
+    if(Glyph == "S") return <0.25, 0.218750, 1.553590>;
+    if(Glyph == "T") return <0.25, 0.156250, 1.587929>;
+    if(Glyph == "U") return <0.25, 0.093750, 1.715921>;
+    if(Glyph == "V") return <0.25, 0.031250, 1.682622>;
+    if(Glyph == "W") return <0.25, -0.031250, 1.966701>;
+    if(Glyph == "X") return <0.25, -0.093750, 1.656608>;
+    if(Glyph == "Y") return <0.25, -0.156250, 1.622268>;
+    if(Glyph == "Z") return <0.25, -0.218750, 1.596254>;
+    if(Glyph == "&") return <-.25, 0.031250, 0.693028>;
+    if(Glyph == "%") return <-.25, 0.093750, 0.892820>;
+    if(Glyph == "^") return <0.25, -0.468750, 1.586889>;
+    if(Glyph == "~") return <0.25, -0.468750, 2.586889>;
+    if(Glyph == "`") return <-.25, 0.406250, 2.391259>;
+    
+    /* Ordered according to QWERTY keyboard letter frequency:
+        e t a o i n s r h l d c u m f p g w y b , . v k ( ) _ ; " = ' - x /
+        0 $ * 1 j : { } > q [ ] 2 z ! < ? 3 + 5 \ 4 # @ | 6 & 9 8 7 % ^ ~ `
+        Wasn't sure where to put upper case, so just put them where it made sense.
+    */
+    return <0, 0, 0>;
+}
+
+
+
+// Resource management
+list Free;
+list Used;
+integer FacesLeft;
+
+// Various accounting
+integer LastText;
+float LastTxtPos;
+float PrevTxtPos;
+vector Anchor;
+vector Position;
+vector Previous;
+
+
+// The magic user-facing variables
+float TextWrapLength = 64.0;
+float MaxTextRenderLength = 64.0;
+float FontSize = 0.02;
+float LineHeight = 0.03;
+vector FontColour = <1,1,1>;
+rotation Direction = <0,0,0,1>;
+//integer OptimiseForHUDs = FALSE;
+
+
+// Used to take prims from reserve for render
+tPlace() { // Internal
+    integer Prim = llList2Integer(Free, 0);
+    Free = llDeleteSubList(Free, 0, 0);
+    Used += Prim;
+    FacesLeft = 8;
+    LastText = Prim;
+    Position += <0,LastTxtPos*FontSize*16,0> * Direction;
+    Params += [PRIM_LINK_TARGET, LastText,
+        PRIM_POS_LOCAL, Position,
+        PRIM_ROT_LOCAL, <.5,.5,.5,.5> * Direction,
+        PRIM_SIZE, <FontSize*8, FontSize, 0.01>,
+        PRIM_COLOR, ALL_SIDES, <1,1,1>, 1.0, // - (0.01*OptimiseForHUDs),
+        PRIM_TEXTURE, ALL_SIDES, TEXTURE_TRANSPARENT, ZERO_VECTOR, ZERO_VECTOR, 0.0
+    ];
+    LastTxtPos = 0.0;
+}
+
+
+
+// Where you want to start entering text, imagine it as your text cursor pipe
+tOrigin(vector Location) { // Public
+    FacesLeft = LastText = 0;
+    LastTxtPos = 0.0;
+    Anchor = Location;
+    Position = Location + <0, FontSize*4-FontSize*0.24037, -FontSize*.5>*Direction;
+}
+
+
+// Renders an underline on the previous t() call
+tUnderline() { // Public
+    integer Prim = llList2Integer(Free, 0);
+    Free = llDeleteSubList(Free, 0, 0);
+    Used += Prim;
+    float Offset = -FontSize*4+FontSize*0.24037;
+    float Height = -FontSize*.5*(1.0 - Underline);
+    float Thickness = FontSize*UnderlineThickness;
+    float Scale = 0.0; if(Thickness < 0.01) { Scale = 0.125 / (Thickness / 0.01); Thickness = 0.01; }
+    vector v0 = Previous + <0,Offset + (PrevTxtPos*FontSize*16), Height> * Direction;
+    vector v1 = Position + <0,Offset + (LastTxtPos*FontSize*16), Height> * Direction;
+    Params += [PRIM_LINK_TARGET, Prim,
+        PRIM_POS_LOCAL, (v0+v1)*0.5,
+        PRIM_ROT_LOCAL, <.5,.5,.5,.5> * Direction,
+        PRIM_SIZE, <llVecDist(v0,v1), Thickness, 0.01>,
+        PRIM_COLOR, ALL_SIDES, ZERO_VECTOR, 0.0,
+        PRIM_COLOR, 7, FontColour, 1.0,
+        PRIM_TEXTURE, ALL_SIDES, TEXTURE_EIGHT, <1.0, Scale, 0.0>, ZERO_VECTOR, 0.0
+    ];
+}
+
+
+// The important one, renders desired text
+t(string Text) { // Public
+    if(LastText < 0) Params += [PRIM_LINK_TARGET, LastText = -LastText];
+    Previous = Position;
+    PrevTxtPos = LastTxtPos;
+    
+    float FontSize4Space = -FontSize*4 + FontSize*0.2403746;
+    float FontSize16 = FontSize*16;
+    
+    integer x; integer y = llStringLength(Text);
+    for(; x < y; ++x) {
+        string Letter = llGetSubString(Text, x, x);
+        if(Letter == "\n") { Anchor.z -= LineHeight; tOrigin(Anchor); }
+        else if(Letter == " ") LastTxtPos += 0.0150234125; // 0.2403746 * (0.5 / 8 faces)
+        else {
+            vector Glyph = Glyphs(Letter);
+            key Texture;
+            if(Glyph.z < 1.0) Texture = TEXTURE_FONT_1;
+            else if(Glyph.z < 2.0) Texture = TEXTURE_FONT_2;
+            else if(Glyph.z < 3.0) Texture = TEXTURE_FONT_3;
+            
+            float glyphPosition = ((Position.y + (FontSize4Space + ((LastTxtPos + (Glyph.z - llFloor(Glyph.z)) * .0625)*FontSize16)))-Anchor.y);
+            if(glyphPosition > MaxTextRenderLength); // skip
+            else
+            {
+                if(glyphPosition > TextWrapLength) {
+                    Anchor.z -= LineHeight;
+                    tOrigin(Anchor);
+                }
+                
+                if(FacesLeft == 0) tPlace();
+                Glyph.x -= LastTxtPos;
+                
+                Params += [PRIM_TEXTURE, 8 - FacesLeft, Texture, <0.5, 0.060 /* - (0.01*OptimiseForHUDs)*/, 0>, Glyph, 0.0];
+                if(FontColour != <1,1,1>) Params += [PRIM_COLOR, 8 - FacesLeft, FontColour, 1.0 /* - (0.01*OptimiseForHUDs)*/];
+                
+                FacesLeft--;
+                LastTxtPos += (Glyph.z - llFloor(Glyph.z)) * .0625;
+            }
+        }
+    }
+}
+
+
+// Initializes the system by checking for Text prims and resetting them
+Init() { // Public
+    integer Prims = llGetNumberOfPrims()+1; Params = [];
+    while(--Prims) if(llGetLinkName(Prims) == "Text") {
+        Free += Prims;
+        Params += [PRIM_LINK_TARGET, Prims,
+            PRIM_POS_LOCAL, <0,0,0>, PRIM_ROT_LOCAL, <0,0,0,1>,
+            PRIM_SIZE, <.01,.01,.01>, PRIM_COLOR, ALL_SIDES, <1,1,1>, 0.0 //,
+            //PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_NONE
+        ];
+        if(!(Prims%32)) Render();
+    } Render();
+}
+
+
+// Depending how much you draw, make sure to flush the render so you don't stack heap
+Render() { // Public
+    llSetLinkPrimitiveParamsFast(0, Params); Params = [];
+    if(LastText > 0) LastText = -LastText;
+} list Params;
+
+
+// Clears all text prims
+Clear() { // Public
+    integer Prims = llGetListLength(Used);
+    while(Prims--) {
+        integer Prim = llList2Integer(Used, Prims);
+        Params += [PRIM_LINK_TARGET, Prim,
+            PRIM_POS_LOCAL, <0,0,0>, PRIM_ROT_LOCAL, <0,0,0,1>,
+            PRIM_SIZE, <.01,.01,.01>, PRIM_COLOR, ALL_SIDES, <1,1,1>, 0.0 //,
+            // PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_NONE
+        ];
+        if(!(Prim%32)) Render();
+    } Render();
+    Free += Used; Used = [];
+    tOrigin(Anchor);
+}
