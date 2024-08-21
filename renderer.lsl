@@ -17,7 +17,7 @@ vector islandGlyph6;
 vector islandGlyph7;
 integer facesLeft = 8;
 
-list printables = [];
+list Printables = [];
 
 float METERS_TO_PIXELS;
 float PIXELS_TO_METERS;
@@ -70,7 +70,7 @@ text(string txt)
             Cursor.x += whitespace * PIXELS_TO_METERS;
             
             // Where are we right now on the island
-            float islandEnd = Cursor.x - islandX;
+            float islandEnd = (Cursor.x - islandX) * METERS_TO_PIXELS;
             
             // Are we out of faces to display on this island?
             integer outOfFaces = (facesLeft == 0);
@@ -78,7 +78,7 @@ text(string txt)
             // Do we need to split the island in two?
             // - Is the glyph wider than the available space left on the island?
             // - Or is there not enough of a transparent gap to the left of the glyph to place it here?
-            integer needsSplit = (spec.x > islandAvailableWidth - whitespace) || (islandEnd > spec.y);
+            integer needsSplit = (spec.x > islandAvailableWidth - whitespace) + (islandEnd + spec.x*.5 > spec.y);
             
             // Does the text need to wrap?
             integer isWrapping = (Cursor.x + spec.x * PIXELS_TO_METERS > TextWrapLength);
@@ -94,7 +94,7 @@ text(string txt)
                 // llOwnerSay("Flush island (" + llList2CSV(reason) + ") " + llInsertString(txt, index, "|")); // + llGetSubString(txt, lastPrintStart, printEnd) + """);
                 
                 
-                // Did we have an island with any glyphs? If so, flush it into the printables
+                // Did we have an island with any glyphs? If so, flush it into the Printables
                 Cursor.x -= whitespace * PIXELS_TO_METERS;
                 textFlush();
                 Cursor.x += whitespace * PIXELS_TO_METERS;
@@ -146,7 +146,7 @@ text(string txt)
                 if(spec.z < islandAvailableWidth) islandAvailableWidth = spec.z;
                 
                 // Now we are moving onto adding the glyph onto our working island
-                vector glyph = <lookup, islandEnd * METERS_TO_PIXELS + spec.x/2, 0>;
+                vector glyph = <lookup, islandEnd + spec.x/2, 0>;
                 if(facesLeft == 8) islandGlyph0 = glyph; else
                 if(facesLeft == 7) islandGlyph1 = glyph; else
                 if(facesLeft == 6) islandGlyph2 = glyph; else
@@ -186,7 +186,7 @@ textFlush()
 {
     if(facesLeft == 8) return;
     
-    printables += [
+    Printables += [
         islandX,
         islandY,
         Cursor.x - islandX,
@@ -195,14 +195,14 @@ textFlush()
         8 - facesLeft
     ];
     
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph0.x; printables += islandGlyph0.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph1.x; printables += islandGlyph1.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph2.x; printables += islandGlyph2.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph3.x; printables += islandGlyph3.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph4.x; printables += islandGlyph4.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph5.x; printables += islandGlyph5.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph6.x; printables += islandGlyph6.y; }
-    if(facesLeft++ < 8) { printables += (integer)islandGlyph7.x; printables += islandGlyph7.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph0.x; Printables += islandGlyph0.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph1.x; Printables += islandGlyph1.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph2.x; Printables += islandGlyph2.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph3.x; Printables += islandGlyph3.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph4.x; Printables += islandGlyph4.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph5.x; Printables += islandGlyph5.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph6.x; Printables += islandGlyph6.y; }
+    if(facesLeft++ < 8) { Printables += (integer)islandGlyph7.x; Printables += islandGlyph7.y; }
     
     // Reset to new working island
     islandX = Cursor.x;
@@ -222,19 +222,19 @@ list textRender(integer withColor, integer returnRenders)
     
     float minWidth = .01; // * METERS_TO_PIXELS; // Smallest prim size possible
     
-    // Render printables into prim params for glyph texture coordinates, locations and sizes
-    if(printables)
+    // Render Printables into prim params for glyph texture coordinates, locations and sizes
+    if(Printables)
     {
         list params = [];
-        while(printables)
+        while(Printables)
         {
-            float isleX = llList2Float(printables, 0);
-            float isleY = llList2Float(printables, 1);
-            float isleWidth = llList2Float(printables, 2);
-            float isleFontSize = llList2Float(printables, 4);
-            integer faces = llList2Integer(printables, 5);
-            list isleGlyphs = llList2List(printables, 6, 5 + faces*2);
-            printables = llDeleteSubList(printables, 0, 5 + faces*2);
+            float isleX = llList2Float(Printables, 0);
+            float isleY = llList2Float(Printables, 1);
+            float isleWidth = llList2Float(Printables, 2);
+            float isleFontSize = llList2Float(Printables, 4);
+            integer faces = llList2Integer(Printables, 5);
+            list isleGlyphs = llList2List(Printables, 6, 5 + faces*2);
+            Printables = llDeleteSubList(Printables, 0, 5 + faces*2);
             
             PIXELS_TO_METERS = isleFontSize / CELL_SIZE;
             
@@ -269,9 +269,9 @@ list textRender(integer withColor, integer returnRenders)
             isleX += isleWidth / 2;
             isleY += isleFontSize * 0.25;
             
-            vector position = Anchor + <0, isleX, isleY> * Direction;
+            vector position = <0, isleX, isleY> * Direction;
             params += [
-                PRIM_POS_LOCAL, position,
+                PRIM_POS_LOCAL, Anchor + position,
                 PRIM_ROT_LOCAL, <.5,.5,.5,.5> * Direction,
                 PRIM_SIZE, <isleWidth, isleFontSize, 0.01>,
                 
@@ -295,7 +295,7 @@ list textRender(integer withColor, integer returnRenders)
         if(params) llSetLinkPrimitiveParamsFast(0, params);
     }
     
-    printables = [];
+    Printables = [];
     return [width, height] + returnables;
 }
 
@@ -306,8 +306,11 @@ list textRender(integer withColor, integer returnRenders)
 textInit()
 {
     TAB = llChar(9);
-    Free = [];
-    Used = [];
+    Free = Used = Printables = [];
+    islandX = islandY = 0;
+    islandAvailableWidth = COLUMN_SIZE;
+    facesLeft = 8;
+    Cursor.x = Cursor.y = whitespace = 0;
     
     // Identify all the Text prims and move them out of the way for now
     list params;
