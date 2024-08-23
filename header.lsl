@@ -17,7 +17,7 @@ float TextWrapLength = 64.0;
 // float TextShadowOffsetX = 0.05;
 // float TextShadowOffsetY = 0.05;
 float TabSize = 4;
-// integer TabularFigures = FALSE;
+integer TabularFigures = FALSE;
 // string WritingDirection = "LTR";
 
 // Positional (m)

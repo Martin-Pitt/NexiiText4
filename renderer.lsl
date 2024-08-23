@@ -56,7 +56,11 @@ text(string txt)
             if(indent < 12.5) indent += tabWidth;
             whitespace += indent;
         }
-        else if(char == "\n") isNewline++; // Newline
+        else if(char == "\n")
+        {
+            isNewline++; // Newline
+            whitespace = 0.0; // Reset whitespace
+        }
         
         else
         {
@@ -126,7 +130,7 @@ text(string txt)
                 // Reset onto new line
                 if(isWrapping || isNewline)
                 {
-                    Cursor.x = 0.0;
+                    Cursor.x = whitespace * PIXELS_TO_METERS;
                     if(isNewline) Cursor.y -= FontSize * LineHeight * isNewline * FONT_SIZE / CELL_SIZE;
                     else Cursor.y -= FontSize * LineHeight * FONT_SIZE / CELL_SIZE;
                     islandX = Cursor.x;
@@ -169,7 +173,7 @@ text(string txt)
     // Cursor.x += whitespace;
     if(isNewline)
     {
-        Cursor.x -= whitespace * PIXELS_TO_METERS;
+        // Cursor.x -= whitespace * PIXELS_TO_METERS;
         textFlush();
         Cursor.x = 0.0;
         Cursor.y -= FontSize * LineHeight * isNewline * FONT_SIZE / CELL_SIZE;
@@ -273,9 +277,7 @@ list textRender(integer withColor, integer returnRenders)
             params += [
                 PRIM_POS_LOCAL, Anchor + position,
                 PRIM_ROT_LOCAL, <.5,.5,.5,.5> * Direction,
-                PRIM_SIZE, <isleWidth, isleFontSize, 0.01>,
-                
-                PRIM_DESC, (string)isleFontSize
+                PRIM_SIZE, <isleWidth, isleFontSize, 0.01>
             ];
             
             if(llGetListLength(params) > MAX_PARAMS)

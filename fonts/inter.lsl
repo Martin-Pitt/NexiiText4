@@ -16,6 +16,7 @@ integer GlyphIndex(string char)
 // Gap is the amount of available transparent space around the glyph
 vector GlyphSpec(integer index)
 {
+	if(TabularFigures && 1 <= index && index <= 10) return <25, 157.1271307, 168.1427557>;
 	if(index == 0) return <40, 169.1193182, 172.9474432>; if(index == 1) return <24.53125, 172.2443182, 168.1427557>; if(index == 2) return <14.4921875, 157.1271307, 173.0450994>; if(index == 3) return <22.4414063, 162.3029119, 172.9474432>; if(index == 4) return <23.9453125, 170.7404119, 173.6115057>;
 	if(index == 5) return <24.7070313, 175.8673651, 170.1154119>; if(index == 6) return <23.0664063, 175.8673651, 170.4181463>; if(index == 7) return <23.359375, 172.4786932, 168.7384588>; if(index == 8) return <20.625, 179.0607244, 169.3927557>; if(index == 9) return <23.28125, 172.4786932, 171.5900213>;
 	if(index == 10) return <23.359375, 177.1075994, 172.0978338>; if(index == 11) return <20.703125, 170.5353338, 168.5724432>; if(index == 12) return <22.6171875, 176.7365057, 169.0216619>; if(index == 13) return <20.9179688, 162.3029119, 178.5333807>; if(index == 14) return <22.6171875, 171.8732244, 172.4884588>;
