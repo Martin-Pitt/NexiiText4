@@ -130,7 +130,7 @@ text(string txt)
                 // Reset onto new line
                 if(isWrapping || isNewline)
                 {
-                    Cursor.x = whitespace * PIXELS_TO_METERS;
+                    if(isNewline) Cursor.x = whitespace * PIXELS_TO_METERS; else Cursor.x = 0;
                     if(isNewline) Cursor.y -= FontSize * LineHeight * isNewline * FONT_SIZE / CELL_SIZE;
                     else Cursor.y -= FontSize * LineHeight * FONT_SIZE / CELL_SIZE;
                     islandX = Cursor.x;
@@ -261,7 +261,7 @@ list textRender(integer withColor, integer returnRenders)
                 coords.x = (coords.x - islePosition) + isleWidth/2;
                 coords /= TEXTURE_SIZE;
                 if(withColor) params += [PRIM_COLOR, 7 - faces, Color, 1];
-                params += [PRIM_TEXTURE, 7 - faces, TEXTURE_INTER, repeats, coords, 0];
+                params += [PRIM_TEXTURE, 7 - faces, TEXTURE_FONT, repeats, coords, 0];
             }
             
             isleWidth *= PIXELS_TO_METERS;
@@ -355,13 +355,15 @@ textInit()
             PRIM_LINK_TARGET, llList2Integer(Free, Prims),
             PRIM_ROT_LOCAL, <.5,.5,.5,.5>,
             PRIM_COLOR, ALL_SIDES, Color, 1,
-            PRIM_TEXTURE, ALL_SIDES, TEXTURE_INTER, ZERO_VECTOR, ZERO_VECTOR, 0.0,
+            PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0.0,
             #ifdef VARIABLE_FONT_WEIGHTS
             PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, cutoff
             #else
-            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_BLEND, 0
+            // PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_BLEND, 0
+            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, 140
             #endif
         ];
+        
         
         if(llGetListLength(params) > MAX_PARAMS)
         {
