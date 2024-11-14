@@ -1,30 +1,10 @@
 #include "header.lsl"
 
-#define MAX_PARAMS 100
 
+// #define MAX_PARAMS 100
+// #define PARAMS_CHECK llGetListLength(params) > MAX_PARAMS
+#define PARAMS_CHECK llGetFreeMemory() < 1500
 
-// Current working island
-float islandX;
-float islandY;
-float islandAvailableWidth = COLUMN_SIZE;
-vector islandGlyph0;
-vector islandGlyph1;
-vector islandGlyph2;
-vector islandGlyph3;
-vector islandGlyph4;
-vector islandGlyph5;
-vector islandGlyph6;
-vector islandGlyph7;
-integer facesLeft = 8;
-
-list Printables = [];
-
-float METERS_TO_PIXELS;
-float PIXELS_TO_METERS;
-float wrapLength;
-float tabWidth;
-float whitespace;
-integer isNewline;
 
 text(string txt)
 {
@@ -77,7 +57,7 @@ text(string txt)
             float islandEnd = (Cursor.x - islandX) * METERS_TO_PIXELS;
             
             // Are we out of faces to display on this island?
-            integer outOfFaces = (facesLeft == 0);
+            integer outOfFaces = (islandFacesFree == 0);
             
             // Do we need to split the island in two?
             // - Is the glyph wider than the available space left on the island?
@@ -151,17 +131,17 @@ text(string txt)
                 
                 // Now we are moving onto adding the glyph onto our working island
                 vector glyph = <lookup, islandEnd + spec.x/2, 0>;
-                if(facesLeft == 8) islandGlyph0 = glyph; else
-                if(facesLeft == 7) islandGlyph1 = glyph; else
-                if(facesLeft == 6) islandGlyph2 = glyph; else
-                if(facesLeft == 5) islandGlyph3 = glyph; else
-                if(facesLeft == 4) islandGlyph4 = glyph; else
-                if(facesLeft == 3) islandGlyph5 = glyph; else
-                if(facesLeft == 2) islandGlyph6 = glyph; else
-                if(facesLeft == 1) islandGlyph7 = glyph;
+                if(islandFacesFree == 8) islandGlyph0 = glyph; else
+                if(islandFacesFree == 7) islandGlyph1 = glyph; else
+                if(islandFacesFree == 6) islandGlyph2 = glyph; else
+                if(islandFacesFree == 5) islandGlyph3 = glyph; else
+                if(islandFacesFree == 4) islandGlyph4 = glyph; else
+                if(islandFacesFree == 3) islandGlyph5 = glyph; else
+                if(islandFacesFree == 2) islandGlyph6 = glyph; else
+                if(islandFacesFree == 1) islandGlyph7 = glyph;
                 
                 Cursor.x += spec.x * PIXELS_TO_METERS;
-                facesLeft--;
+                islandFacesFree--;
             // }
             
             isNewline = 0;
@@ -188,7 +168,7 @@ text(string txt)
 
 textFlush()
 {
-    if(facesLeft == 8) return;
+    if(islandFacesFree == 8) return;
     
     Printables += [
         islandX,
@@ -196,29 +176,29 @@ textFlush()
         Cursor.x - islandX,
         islandAvailableWidth,
         FontSize,
-        8 - facesLeft
+        8 - islandFacesFree
     ];
     
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph0.x; Printables += islandGlyph0.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph1.x; Printables += islandGlyph1.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph2.x; Printables += islandGlyph2.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph3.x; Printables += islandGlyph3.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph4.x; Printables += islandGlyph4.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph5.x; Printables += islandGlyph5.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph6.x; Printables += islandGlyph6.y; }
-    if(facesLeft++ < 8) { Printables += (integer)islandGlyph7.x; Printables += islandGlyph7.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph0.x; Printables += islandGlyph0.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph1.x; Printables += islandGlyph1.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph2.x; Printables += islandGlyph2.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph3.x; Printables += islandGlyph3.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph4.x; Printables += islandGlyph4.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph5.x; Printables += islandGlyph5.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph6.x; Printables += islandGlyph6.y; }
+    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph7.x; Printables += islandGlyph7.y; }
     
     // Reset to new working island
     islandX = Cursor.x;
     islandAvailableWidth = COLUMN_SIZE;
     islandGlyph0 = islandGlyph1 = islandGlyph2 = islandGlyph3 = islandGlyph4 = islandGlyph5 = islandGlyph6 = islandGlyph7 = ZERO_VECTOR;
-    facesLeft = 8;
+    islandFacesFree = 8;
 }
 
 
-list textRender(integer withColor, integer returnRenders)
+list textRender()
 {
-    list returnables = [];
+    list renderables = [];
     float width;
     float height;
     
@@ -246,8 +226,18 @@ list textRender(integer withColor, integer returnRenders)
             
             isleWidth /= PIXELS_TO_METERS;
             
-            integer linkTarget = llList2Integer(Free, 0);
-            Free = llDeleteSubList(Free, 0, 0);
+            integer linkTarget;
+            if(Bin)
+            {
+                linkTarget = llList2Integer(Bin, 0);
+                Bin = llDeleteSubList(Bin, 0, 0);
+            }
+            
+            else
+            {
+                linkTarget = llList2Integer(Free, 0);
+                Free = llDeleteSubList(Free, 0, 0);
+            }
             Used += linkTarget;
             params += [PRIM_LINK_TARGET, linkTarget];
             
@@ -260,8 +250,7 @@ list textRender(integer withColor, integer returnRenders)
                 vector coords = GlyphCoords(isleLookup);
                 coords.x = (coords.x - islePosition) + isleWidth/2;
                 coords /= TEXTURE_SIZE;
-                if(withColor) params += [PRIM_COLOR, 7 - faces, Color, 1];
-                params += [PRIM_TEXTURE, 7 - faces, TEXTURE_FONT, repeats, coords, 0];
+                params += [PRIM_COLOR, 7 - faces, Color, 1, PRIM_TEXTURE, 7 - faces, TEXTURE_FONT, repeats, coords, 0];
             }
             
             isleWidth *= PIXELS_TO_METERS;
@@ -280,28 +269,36 @@ list textRender(integer withColor, integer returnRenders)
                 PRIM_SIZE, <isleWidth, isleFontSize, 0.01>
             ];
             
-            if(llGetListLength(params) > MAX_PARAMS)
+            if(PARAMS_CHECK)
             {
                 llSetLinkPrimitiveParamsFast(0, params);
                 params = [];
             }
             
-            if(returnRenders)
-            {
-                if(isleX + isleWidth > width) width = isleX + isleWidth/2;
-                if(isleY + isleFontSize > height) height = isleY + isleFontSize;
-                returnables += [linkTarget, position];
-            }
+            
+            if(isleX + isleWidth > width) width = isleX + isleWidth/2;
+            if(isleY + isleFontSize > height) height = isleY + isleFontSize;
+            renderables += [linkTarget, position];
         }
         
         if(params) llSetLinkPrimitiveParamsFast(0, params);
     }
     
     Printables = [];
-    return [width, height] + returnables;
+    return [width, height] + renderables;
 }
 
 
+textBin(list render)
+{
+    integer index = 2;
+    integer total = llGetListLength(render);
+    for(; index < total; index += 2)
+    {
+        integer link = llList2Integer(render, index);
+        Bin += link;
+    }
+}
 
 
 // Initializes the system by checking for Text prims and resetting them
@@ -311,7 +308,7 @@ textInit()
     Free = Used = Printables = [];
     islandX = islandY = 0;
     islandAvailableWidth = COLUMN_SIZE;
-    facesLeft = 8;
+    islandFacesFree = 8;
     Cursor.x = Cursor.y = whitespace = 0;
     
     // Identify all the Text prims and move them out of the way for now
@@ -323,16 +320,19 @@ textInit()
         {
             Free += Prims;
             
-            params += [
-                PRIM_LINK_TARGET, Prims,
-                PRIM_POS_LOCAL, <0,0,0>,
-                PRIM_SIZE, <.01,.01,.01>
-            ];
-            
-            if(llGetListLength(params) > MAX_PARAMS)
+            if(llList2Vector(llGetLinkPrimitiveParams(Prims, [PRIM_SIZE]), 0) != ZERO_VECTOR)
             {
-                llSetLinkPrimitiveParamsFast(0, params);
-                params = [];
+                params += [
+                    PRIM_LINK_TARGET, Prims,
+                    PRIM_POS_LOCAL, <0,0,0>,
+                    PRIM_SIZE, <.01,.01,.01>
+                ];
+                
+                if(PARAMS_CHECK)
+                {
+                    llSetLinkPrimitiveParamsFast(0, params);
+                    params = [];
+                }
             }
         }
     }
@@ -365,7 +365,7 @@ textInit()
         ];
         
         
-        if(llGetListLength(params) > MAX_PARAMS)
+        if(PARAMS_CHECK)
         {
             llSetLinkPrimitiveParamsFast(0, params);
             params = [];
@@ -379,3 +379,6 @@ textInit()
     //     + "Free Memory: " + (string)llRound(llGetFreeMemory() / 1024) + "KB"
     // );
 }
+
+
+

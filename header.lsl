@@ -1,6 +1,7 @@
 // Resources
-list Free;
-list Used;
+list Free; // Links of freely available text meshes
+list Used; // Links of text meshes that are currently in use
+list Bin; // Links that had been just free'd and ready to be recycled or dropped into free asap (with prim params reset)
 
 // Settings
 vector Color = <1,1,1>;
@@ -42,3 +43,29 @@ vector Cursor;
 // integer isNewline = FALSE;
 // integer isWrapping = FALSE;
 string TAB; // Set to real tab character on textInit()
+
+
+
+
+// Current working island
+float islandX;
+float islandY;
+float islandAvailableWidth = COLUMN_SIZE;
+vector islandGlyph0;
+vector islandGlyph1;
+vector islandGlyph2;
+vector islandGlyph3;
+vector islandGlyph4;
+vector islandGlyph5;
+vector islandGlyph6;
+vector islandGlyph7;
+integer islandFacesFree = 8;
+
+list Printables = [];
+
+float METERS_TO_PIXELS;
+float PIXELS_TO_METERS;
+float wrapLength;
+float tabWidth;
+float whitespace;
+integer isNewline;
