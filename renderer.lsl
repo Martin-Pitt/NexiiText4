@@ -344,9 +344,7 @@ textInit()
     }
     
     // Second pass where we give them the default properties
-    #ifdef VARIABLE_FONT_WEIGHTS
-    integer cutoff = llRound(220. + ((64. - 220.) * ((100. - FontWeight) / (100. - 900.))));
-    #endif
+    // integer cutoff = llRound(220. + ((64. - 220.) * ((100. - FontWeight) / (100. - 900.))));
     
     Prims = llGetListLength(Free);
     while(Prims --> 0)
@@ -356,12 +354,9 @@ textInit()
             PRIM_ROT_LOCAL, <.5,.5,.5,.5>,
             PRIM_COLOR, ALL_SIDES, Color, 1,
             PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0.0,
-            #ifdef VARIABLE_FONT_WEIGHTS
-            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, cutoff
-            #else
-            // PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_BLEND, 0
-            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, 140
-            #endif
+            // PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, cutoff // Variable Font Weight implementation which allows setting font weight from 100 to 900, but has aliasing issues especially in HUD
+            // PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, 140 // Has some aliasing artifacts but is sharp up close
+            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_BLEND, 0 // Blending seems best so far
         ];
         
         
