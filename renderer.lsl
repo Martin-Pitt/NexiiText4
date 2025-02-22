@@ -31,8 +31,21 @@ text(string txt)
         else if(char == " ") { whitespace += 7.51953125; } // Thin Space
         else if(char == " ") { whitespace += 2.978515625; } // Hair Space
         else if(char == TAB) { // Tab indentation
-            float indent = llCeil((Cursor.x * METERS_TO_PIXELS + whitespace) / tabWidth) * tabWidth;
-            indent -= (Cursor.x * METERS_TO_PIXELS + whitespace);
+            if(isNewline)
+            {
+                textFlush();
+                Cursor.x = 0.0;
+                Cursor.y -= FontSize * LineHeight * isNewline * FONT_BY_CELL;
+                islandX = Cursor.x;
+                islandY = Cursor.y;
+                
+                isNewline = 0;
+                whitespace = 0.0;
+            }
+            
+            float edge = Cursor.x * METERS_TO_PIXELS + whitespace;
+            float indent = llCeil(edge / tabWidth) * tabWidth;
+            indent -= edge;
             if(indent < 12.5) indent += tabWidth;
             whitespace += indent;
         }
@@ -111,8 +124,8 @@ text(string txt)
                 if(isWrapping || isNewline)
                 {
                     if(isNewline) Cursor.x = whitespace * PIXELS_TO_METERS; else Cursor.x = 0;
-                    if(isNewline) Cursor.y -= FontSize * LineHeight * isNewline * FONT_SIZE / CELL_SIZE;
-                    else Cursor.y -= FontSize * LineHeight * FONT_SIZE / CELL_SIZE;
+                    if(isNewline) Cursor.y -= FontSize * LineHeight * isNewline * FONT_BY_CELL;
+                    else Cursor.y -= FontSize * LineHeight * FONT_BY_CELL;
                     islandX = Cursor.x;
                     islandY = Cursor.y;
                 }
@@ -149,14 +162,11 @@ text(string txt)
         }
     }
     
-    // Move cursor forward by remaining whitespace
-    // Cursor.x += whitespace;
     if(isNewline)
     {
-        // Cursor.x -= whitespace * PIXELS_TO_METERS;
         textFlush();
         Cursor.x = 0.0;
-        Cursor.y -= FontSize * LineHeight * isNewline * FONT_SIZE / CELL_SIZE;
+        Cursor.y -= FontSize * LineHeight * isNewline * FONT_BY_CELL;
         islandX = Cursor.x;
         islandY = Cursor.y;
     }
