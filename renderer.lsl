@@ -22,7 +22,7 @@ textInit()
     LinksetResourceSetup("NT4", "Text");
     LinksetResourceReset("NT4", [
         PRIM_POS_LOCAL, <0,0,0>,
-        PRIM_SIZE, <.01,.01,01>
+        PRIM_SIZE, <.01,.01,.01>
     ]);
     LinksetResourceReset("NT4", [
         PRIM_COLOR, ALL_SIDES, Color, 1,
