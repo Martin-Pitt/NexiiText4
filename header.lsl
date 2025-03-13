@@ -1,7 +1,3 @@
-// Resources
-list Free;
-list Used;
-
 // Settings
 vector Color = <1,1,1>;
 // integer FontWeight = 400; 
@@ -42,3 +38,35 @@ vector Cursor;
 // integer isNewline = FALSE;
 // integer isWrapping = FALSE;
 string TAB; // Set to real tab character on textInit()
+
+
+
+
+// Current working island
+float islandX;
+float islandY;
+float islandAvailableWidth;
+string islandChar0; float islandPos0;
+string islandChar1; float islandPos1;
+string islandChar2; float islandPos2;
+string islandChar3; float islandPos3;
+string islandChar4; float islandPos4;
+string islandChar5; float islandPos5;
+string islandChar6; float islandPos6;
+string islandChar7; float islandPos7;
+integer islandFacesFree;
+
+list Printables;
+
+string TEXTURE_FONT;
+float TEXTURE_SIZE;
+float FONT_SIZE;
+float CELL_SIZE;
+float FONT_BY_CELL;
+float COLUMN_SIZE;
+float METERS_TO_PIXELS;
+float PIXELS_TO_METERS;
+float wrapLength;
+float tabWidth;
+float whitespace;
+integer isNewline;
