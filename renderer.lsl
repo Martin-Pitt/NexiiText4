@@ -1,9 +1,34 @@
 #include "header.lsl"
 
-
-// #define MAX_PARAMS 100
-// #define PARAMS_CHECK llGetListLength(params) > MAX_PARAMS
 #define PARAMS_CHECK llGetFreeMemory() < 1500
+
+// Initializes the system by checking for Text prims and resetting them
+textInit()
+{
+    TAB = llChar(9);
+    TEXTURE_FONT = llLinksetDataRead("NT4_Font_Texture");
+    TEXTURE_SIZE = (float)llLinksetDataRead("NT4_Font_TextureSize");
+    FONT_SIZE = (float)llLinksetDataRead("NT4_Font_FontSize");
+    CELL_SIZE = (float)llLinksetDataRead("NT4_Font_CellSize");
+    COLUMN_SIZE = (float)llLinksetDataRead("NT4_Font_ColumnSize");
+    FONT_BY_CELL = FONT_SIZE / CELL_SIZE;
+    
+    Printables = [];
+    islandX = islandY = 0;
+    islandAvailableWidth = COLUMN_SIZE;
+    islandFacesFree = 8;
+    Cursor.x = Cursor.y = whitespace = 0;
+    
+    LinksetResourceSetup("NT4", "Text");
+    LinksetResourceReset("NT4", [
+        PRIM_POS_LOCAL, <0,0,0>,
+        PRIM_SIZE, <.01,.01,01>
+    ]);
+    LinksetResourceReset("NT4", [
+        PRIM_COLOR, ALL_SIDES, Color, 1,
+        PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0
+    ]);
+}
 
 
 text(string txt)
@@ -57,11 +82,13 @@ text(string txt)
         
         else
         {
-            integer lookup = GlyphIndex(char);
-            if(lookup == -1) lookup = 0; // Use replacement character when unknown
+            string json = llLinksetDataRead("NT4_Font_" + char);
+            if(json == "") json = llLinksetDataRead("NT4_Font_" + (char = "�")); // Use replacement character when unknown
             
-            // Get a glyph spec in format of <width, left gap, and right gap>
-            vector spec = GlyphSpec(lookup);
+            list glyphMetrics = llJson2List(json);
+            float glyphWidth = llList2Float(glyphMetrics, 0);
+            float glyphLeftGap = llList2Float(glyphMetrics, 1);
+            float glyphRightGap = llList2Float(glyphMetrics, 2);
             
             // Move cursor forward by whitespace
             Cursor.x += whitespace * PIXELS_TO_METERS;
@@ -75,10 +102,10 @@ text(string txt)
             // Do we need to split the island in two?
             // - Is the glyph wider than the available space left on the island?
             // - Or is there not enough of a transparent gap to the left of the glyph to place it here?
-            integer needsSplit = (spec.x > islandAvailableWidth - whitespace) + (islandEnd + spec.x*.5 > spec.y);
+            integer needsSplit = (glyphWidth > islandAvailableWidth - whitespace) + (islandEnd + glyphWidth*.5 > glyphLeftGap);
             
             // Does the text need to wrap?
-            integer isWrapping = (Cursor.x + spec.x * PIXELS_TO_METERS > TextWrapLength);
+            integer isWrapping = (Cursor.x + glyphWidth * PIXELS_TO_METERS > TextWrapLength);
             
             // Before add the glyph, do we need to put it on a different island?
             if(outOfFaces || needsSplit || isWrapping || isNewline)
@@ -137,23 +164,23 @@ text(string txt)
             // if(!isWrapping)
             // {
                 // Take off available width on the island by what we are adding
-                islandAvailableWidth -= whitespace + spec.x;
+                islandAvailableWidth -= whitespace + glyphWidth;
                 
                 // Check the transparent gap on the right of the glyph for enough room
-                if(spec.z < islandAvailableWidth) islandAvailableWidth = spec.z;
+                if(glyphRightGap < islandAvailableWidth) islandAvailableWidth = glyphRightGap;
                 
                 // Now we are moving onto adding the glyph onto our working island
-                vector glyph = <lookup, islandEnd + spec.x/2, 0>;
-                if(islandFacesFree == 8) islandGlyph0 = glyph; else
-                if(islandFacesFree == 7) islandGlyph1 = glyph; else
-                if(islandFacesFree == 6) islandGlyph2 = glyph; else
-                if(islandFacesFree == 5) islandGlyph3 = glyph; else
-                if(islandFacesFree == 4) islandGlyph4 = glyph; else
-                if(islandFacesFree == 3) islandGlyph5 = glyph; else
-                if(islandFacesFree == 2) islandGlyph6 = glyph; else
-                if(islandFacesFree == 1) islandGlyph7 = glyph;
+                float pos = islandEnd + glyphWidth/2;
+                if(islandFacesFree == 8) { islandChar0 = char; islandPos0 = pos; } else
+                if(islandFacesFree == 7) { islandChar1 = char; islandPos1 = pos; } else
+                if(islandFacesFree == 6) { islandChar2 = char; islandPos2 = pos; } else
+                if(islandFacesFree == 5) { islandChar3 = char; islandPos3 = pos; } else
+                if(islandFacesFree == 4) { islandChar4 = char; islandPos4 = pos; } else
+                if(islandFacesFree == 3) { islandChar5 = char; islandPos5 = pos; } else
+                if(islandFacesFree == 2) { islandChar6 = char; islandPos6 = pos; } else
+                if(islandFacesFree == 1) { islandChar7 = char; islandPos7 = pos; }
                 
-                Cursor.x += spec.x * PIXELS_TO_METERS;
+                Cursor.x += glyphWidth * PIXELS_TO_METERS;
                 islandFacesFree--;
             // }
             
@@ -187,21 +214,22 @@ textFlush()
         islandAvailableWidth,
         FontSize,
         8 - islandFacesFree
+        // char
+        // pos
     ];
     
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph0.x; Printables += islandGlyph0.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph1.x; Printables += islandGlyph1.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph2.x; Printables += islandGlyph2.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph3.x; Printables += islandGlyph3.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph4.x; Printables += islandGlyph4.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph5.x; Printables += islandGlyph5.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph6.x; Printables += islandGlyph6.y; }
-    if(islandFacesFree++ < 8) { Printables += (integer)islandGlyph7.x; Printables += islandGlyph7.y; }
+    if(islandFacesFree++ < 8) { Printables += islandChar0; Printables += islandPos0; }
+    if(islandFacesFree++ < 8) { Printables += islandChar1; Printables += islandPos1; }
+    if(islandFacesFree++ < 8) { Printables += islandChar2; Printables += islandPos2; }
+    if(islandFacesFree++ < 8) { Printables += islandChar3; Printables += islandPos3; }
+    if(islandFacesFree++ < 8) { Printables += islandChar4; Printables += islandPos4; }
+    if(islandFacesFree++ < 8) { Printables += islandChar5; Printables += islandPos5; }
+    if(islandFacesFree++ < 8) { Printables += islandChar6; Printables += islandPos6; }
+    if(islandFacesFree++ < 8) { Printables += islandChar7; Printables += islandPos7; }
     
     // Reset to new working island
     islandX = Cursor.x;
     islandAvailableWidth = COLUMN_SIZE;
-    islandGlyph0 = islandGlyph1 = islandGlyph2 = islandGlyph3 = islandGlyph4 = islandGlyph5 = islandGlyph6 = islandGlyph7 = ZERO_VECTOR;
     islandFacesFree = 8;
 }
 
@@ -236,28 +264,17 @@ list textRender()
             
             isleWidth /= PIXELS_TO_METERS;
             
-            integer linkTarget;
-            if(Bin)
-            {
-                linkTarget = llList2Integer(Bin, 0);
-                Bin = llDeleteSubList(Bin, 0, 0);
-            }
-            
-            else
-            {
-                linkTarget = llList2Integer(Free, 0);
-                Free = llDeleteSubList(Free, 0, 0);
-            }
-            Used += linkTarget;
+            integer linkTarget = LinksetResourceReserve("NT4");
             params += [PRIM_LINK_TARGET, linkTarget];
             
             vector repeats = <isleWidth / TEXTURE_SIZE, CELL_SIZE / TEXTURE_SIZE, 0>;
             while(faces --> 0)
             {
-                integer isleLookup = llList2Integer(isleGlyphs, faces*2);
+                string char = llList2String(isleGlyphs, faces*2);
                 float islePosition = llList2Float(isleGlyphs, faces*2 + 1);
-                vector spec = GlyphSpec(isleLookup);
-                vector coords = GlyphCoords(isleLookup);
+                list glyphMetrics = llJson2List(llLinksetDataRead("NT4_Font_" + char));
+                vector coords = <llList2Float(glyphMetrics, 3), llList2Float(glyphMetrics, 4), 0>;
+                
                 coords.x = (coords.x - islePosition) + isleWidth/2;
                 coords /= TEXTURE_SIZE;
                 params += [PRIM_COLOR, 7 - faces, Color, 1, PRIM_TEXTURE, 7 - faces, TEXTURE_FONT, repeats, coords, 0];
@@ -301,89 +318,26 @@ list textRender()
 
 textBin(list render)
 {
+    list params = [];
+    string links = llLinksetDataRead("NT4");
     integer index = 2;
     integer total = llGetListLength(render);
     for(; index < total; index += 2)
     {
         integer link = llList2Integer(render, index);
-        Bin += link;
-    }
-}
-
-
-// Initializes the system by checking for Text prims and resetting them
-textInit()
-{
-    TAB = llChar(9);
-    Free = Used = Printables = [];
-    islandX = islandY = 0;
-    islandAvailableWidth = COLUMN_SIZE;
-    islandFacesFree = 8;
-    Cursor.x = Cursor.y = whitespace = 0;
-    
-    // Identify all the Text prims and move them out of the way for now
-    list params;
-    integer Prims = llGetNumberOfPrims() + 1;
-    while(--Prims)
-    {
-        if(llGetLinkName(Prims) == "Text")
-        {
-            Free += Prims;
-            
-            if(llList2Vector(llGetLinkPrimitiveParams(Prims, [PRIM_SIZE]), 0) != ZERO_VECTOR)
-            {
-                params += [
-                    PRIM_LINK_TARGET, Prims,
-                    PRIM_POS_LOCAL, <0,0,0>,
-                    PRIM_SIZE, <.01,.01,.01>
-                ];
-                
-                if(PARAMS_CHECK)
-                {
-                    llSetLinkPrimitiveParamsFast(0, params);
-                    params = [];
-                }
-            }
-        }
-    }
-    
-    if(params)
-    {
-        llSetLinkPrimitiveParamsFast(0, params);
-        params = [];
-    }
-    
-    // Second pass where we give them the default properties
-    // integer cutoff = llRound(220. + ((64. - 220.) * ((100. - FontWeight) / (100. - 900.))));
-    
-    Prims = llGetListLength(Free);
-    while(Prims --> 0)
-    {
+        links += llChar(link - 1);
         params += [
-            PRIM_LINK_TARGET, llList2Integer(Free, Prims),
-            PRIM_ROT_LOCAL, <.5,.5,.5,.5>,
+            PRIM_LINK_TARGET, link,
+            PRIM_POS_LOCAL, <0,0,0>,
+            PRIM_SIZE, <.01,.01,01>,
             PRIM_COLOR, ALL_SIDES, Color, 1,
-            PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0.0,
-            // PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, cutoff // Variable Font Weight implementation which allows setting font weight from 100 to 900, but has aliasing issues especially in HUD
-            // PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, 140 // Has some aliasing artifacts but is sharp up close
-            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_BLEND, 0 // Blending seems best so far
+            PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0
         ];
-        
-        
-        if(PARAMS_CHECK)
-        {
-            llSetLinkPrimitiveParamsFast(0, params);
-            params = [];
-        }
     }
-    
-    if(params) llSetLinkPrimitiveParamsFast(0, params);
-    
-    // llOwnerSay("------------------------ NexText4 Init ------------------------\n"
-    //     + "Prims: " + (string)llGetListLength(Free) + "\n"
-    //     + "Free Memory: " + (string)llRound(llGetFreeMemory() / 1024) + "KB"
-    // );
+    llLinksetDataWrite("NT4", links);
+    llSetLinkPrimitiveParamsFast(0, params);
 }
+
 
 
 

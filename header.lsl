@@ -1,8 +1,3 @@
-// Resources
-list Free; // Links of freely available text meshes
-list Used; // Links of text meshes that are currently in use
-list Bin; // Links that had been just free'd and ready to be recycled or dropped into free asap (with prim params reset)
-
 // Settings
 vector Color = <1,1,1>;
 // integer FontWeight = 400; 
@@ -50,19 +45,25 @@ string TAB; // Set to real tab character on textInit()
 // Current working island
 float islandX;
 float islandY;
-float islandAvailableWidth = COLUMN_SIZE;
-vector islandGlyph0;
-vector islandGlyph1;
-vector islandGlyph2;
-vector islandGlyph3;
-vector islandGlyph4;
-vector islandGlyph5;
-vector islandGlyph6;
-vector islandGlyph7;
-integer islandFacesFree = 8;
+float islandAvailableWidth;
+string islandChar0; float islandPos0;
+string islandChar1; float islandPos1;
+string islandChar2; float islandPos2;
+string islandChar3; float islandPos3;
+string islandChar4; float islandPos4;
+string islandChar5; float islandPos5;
+string islandChar6; float islandPos6;
+string islandChar7; float islandPos7;
+integer islandFacesFree;
 
-list Printables = [];
+list Printables;
 
+string TEXTURE_FONT;
+float TEXTURE_SIZE;
+float FONT_SIZE;
+float CELL_SIZE;
+float FONT_BY_CELL;
+float COLUMN_SIZE;
 float METERS_TO_PIXELS;
 float PIXELS_TO_METERS;
 float wrapLength;
