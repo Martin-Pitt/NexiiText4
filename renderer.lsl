@@ -1,10 +1,19 @@
 #include "header.lsl"
 
+/// Dependencies:
+// https://github.com/Martin-Pitt/NexiiLSL
+// "NexiiLSL/linkset.lsl"
+
+
 #define PARAMS_CHECK llGetFreeMemory() < 1500
+
 
 // Initializes the system by checking for Text prims and resetting them
 textInit()
 {
+    if(llLinksetDataRead("NT4_Font") == "")
+        llOwnerSay("There is no font saved for the text renderer in Linkset Data; Have you forgotten to drop the Font Setup scripts?");
+    
     TAB = llChar(9);
     TEXTURE_FONT = llLinksetDataRead("NT4_Font_Texture");
     TEXTURE_SIZE = (float)llLinksetDataRead("NT4_Font_TextureSize");
@@ -110,35 +119,10 @@ text(string txt)
             // Before add the glyph, do we need to put it on a different island?
             if(outOfFaces || needsSplit || isWrapping || isNewline)
             {
-                // list reason;
-                // if(outOfFaces) reason += "no faces";
-                // if(needsSplit) reason += "needs split";
-                // if(isWrapping) reason += "wrapping";
-                // if(isNewline) reason += "newline";
-                // llOwnerSay("Flush island (" + llList2CSV(reason) + ") " + llInsertString(txt, index, "|")); // + llGetSubString(txt, lastPrintStart, printEnd) + """);
-                
-                
                 // Did we have an island with any glyphs? If so, flush it into the Printables
                 Cursor.x -= whitespace * PIXELS_TO_METERS;
                 textFlush();
                 Cursor.x += whitespace * PIXELS_TO_METERS;
-                
-                // Did we wrap? Also if we were only whitespace, just drop down
-                // if(isWrapping && lastSpaceIndex && lastSpacePos > wrapLength)
-                // {
-                //     // Undoing glyphs on current
-                //     while(Cursor.x > lastSpacePos)
-                //     {
-                //         Cursor.x -= glyph.z;
-                //         lastPrintPos = Cursor.x;
-                //         glyph = llList2Rot(glyphs, -1);
-                //         glyphs = llDeleteSubList(glyphs, -1, -1);
-                //     }
-                    
-                //     Cursor.x = lastSpacePos;
-                //     index = lastSpaceIndex;
-                // }
-                
                 
                 
                 // Split the island to where we are at
@@ -214,8 +198,8 @@ textFlush()
         islandAvailableWidth,
         FontSize,
         8 - islandFacesFree
-        // char
-        // pos
+        // string char
+        // float pos
     ];
     
     if(islandFacesFree++ < 8) { Printables += islandChar0; Printables += islandPos0; }
