@@ -1,0 +1,120 @@
+local LinksetResource = {}
+
+function LinksetResource.Reserve(kv)
+    local links = ll.LinksetDataRead(kv)
+    if links == "" then return false end
+    local link = string.byte(links)
+    links = string.sub(links, 1)
+    ll.LinksetDataWrite(kv, links)
+    return link
+end
+
+function LinksetResource.Release(kv, link)
+    ll.LinksetDataWrite(kv, string.char(link) .. ll.LinksetDataRead(kv))
+end
+
+function LinksetResource.Setup(kv, pattern)
+    local links = {}
+    for link = 1, ll.GetNumberOfPrims() do
+        local name = ll.GetLinkName(link)
+        if name == pattern then table.insert(links, link) end
+    end
+    ll.LinksetDataWrite(kv, links)
+end
+
+function LinksetResource.Reset(kv, reset)
+    local index = 1
+    local params = {}
+    local links = ll.LinksetDataRead(kv)
+    for iterator = 1, #links do
+        params[index] = PRIM_LINK_TARGET;
+        index += 1
+        params[index] = 1 + string.byte(links, iterator) --ll.Ord(links, iterator)
+        index += 1
+        for i = 1, #reset do
+            params[index] = reset[i]
+            index += 1
+        end
+        -- params += { PRIM_LINK_TARGET, 1 + llOrd(links, iterator) } + reset
+        -- if llGetFreeMemory() < 1500) { llSetLinkPrimitiveParamsFast(0, params); params = []; }
+    }
+    ll.SetLinkPrimitiveParamsFast(0, params)
+end
+
+
+
+
+
+
+local NexText = {
+    Font = {
+        Texture = "",
+        TextureSize = 0,
+        FontSize = 0,
+        CellSize = 0,
+        ColumnSize = 0,
+        FontByCell = 0,
+    },
+    Styling = {
+        Color = vector(1, 1, 1),
+        FontSize = 0.5,
+        LineHeight = 1.4,
+        TextWrapLength = 64.0,
+        TabSize = 4,
+        TabularFigures = false,
+    },
+    Positional = {
+        Anchor = vector(0, 0, 0),
+        Direction = rotation(0, 0, 0, 1),
+    },
+    Stack = {
+        Cursor = { x = 0, y = 0 },
+    },
+    Island = {
+        x = 0,
+        y = 0,
+        availableWidth = 0,
+        chars = {},
+        facesFree = 0,
+    },
+    Printables = {}
+}
+
+function nextextInit()
+    if ll.LinksetDataRead("NT4_Font") == "" then
+        ll.OwnerSay("There is no font saved for the text renderer in Linkset Data; Have you forgotten to drop the Font Setup scripts?")
+    end
+    
+    NexText.Font.Texture = ll.LinksetDataRead("NT4_Font_Texture")
+    NexText.Font.TextureSize = tonumber(ll.LinksetDataRead("NT4_Font_TextureSize"))
+    NexText.Font.FontSize = tonumber(ll.LinksetDataRead("NT4_Font_FontSize"))
+    NexText.Font.CellSize = tonumber(ll.LinksetDataRead("NT4_Font_CellSize"))
+    NexText.Font.ColumnSize = tonumber(ll.LinksetDataRead("NT4_Font_ColumnSize"))
+    NexText.Font.FontByCell = NexText.Font.FontSize / NexText.Font.CellSize
+    
+    NexText.Printables = {}
+    NexText.Island.x = 0
+    NexText.Island.y = 0
+    NexText.Island.availableWidth = NexText.Font.ColumnSize
+    NexText.Island.facesFree = 8
+    NexText.Stack.Cursor.x = 0
+    NexText.Stack.Cursor.y = 0
+    NexText.Stack.Whitespace = 0
+    
+    
+end
+
+
+
+
+
+function state_entry()
+   -- ll.Say(0, "Hello, Avatar!")
+end
+
+function touch_start(total_number)
+   -- ll.Say(0, "Touched.")
+end
+
+-- Simulate the state_entry event
+state_entry()
