@@ -34,7 +34,7 @@ textInit()
         PRIM_SIZE, <.01,.01,.01>
     ]);
     LinksetResourceReset("NT4", [
-        PRIM_COLOR, ALL_SIDES, Color, 1,
+        PRIM_COLOR, ALL_SIDES, Color, Alpha,
         PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0
     ]);
 }
@@ -261,7 +261,7 @@ list textRender()
                 
                 coords.x = (coords.x - islePosition) + isleWidth/2;
                 coords /= TEXTURE_SIZE;
-                params += [PRIM_COLOR, 7 - faces, Color, 1, PRIM_TEXTURE, 7 - faces, TEXTURE_FONT, repeats, coords, 0];
+                params += [PRIM_COLOR, 7 - faces, Color, Alpha, PRIM_TEXTURE, 7 - faces, TEXTURE_FONT, repeats, coords, 0];
             }
             
             isleWidth *= PIXELS_TO_METERS;
@@ -314,7 +314,7 @@ textBin(list render)
             PRIM_LINK_TARGET, link,
             PRIM_POS_LOCAL, <0,0,0>,
             PRIM_SIZE, <.01,.01,01>,
-            PRIM_COLOR, ALL_SIDES, Color, 1,
+            PRIM_COLOR, ALL_SIDES, Color, Alpha,
             PRIM_TEXTURE, ALL_SIDES, TEXTURE_FONT, ZERO_VECTOR, ZERO_VECTOR, 0
         ];
     }

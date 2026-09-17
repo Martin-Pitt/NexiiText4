@@ -3,8 +3,8 @@ local LinksetResource = {}
 function LinksetResource.Reserve(kv)
     local links = ll.LinksetDataRead(kv)
     if links == "" then return false end
-    local link = string.byte(links)
-    links = string.sub(links, 1)
+    local link = string.byte(links, #links, #links)
+    links = string.sub(links, 1, #links - 1)
     ll.LinksetDataWrite(kv, links)
     return link
 end
@@ -17,9 +17,9 @@ function LinksetResource.Setup(kv, pattern)
     local links = {}
     for link = 1, ll.GetNumberOfPrims() do
         local name = ll.GetLinkName(link)
-        if name == pattern then table.insert(links, link) end
+        if name == pattern then table.insert(links, string.char(link)) end
     end
-    ll.LinksetDataWrite(kv, links)
+    ll.LinksetDataWrite(kv, table.concat(links))
 end
 
 function LinksetResource.Reset(kv, reset)
@@ -29,7 +29,7 @@ function LinksetResource.Reset(kv, reset)
     for iterator = 1, #links do
         params[index] = PRIM_LINK_TARGET;
         index += 1
-        params[index] = 1 + string.byte(links, iterator) --ll.Ord(links, iterator)
+        params[index] = string.byte(links, iterator, iterator);
         index += 1
         for i = 1, #reset do
             params[index] = reset[i]
@@ -56,7 +56,7 @@ local NexText = {
         FontByCell = 0,
     },
     Styling = {
-        Color = vector(1, 1, 1),
+        Color = vector(0, 0, 0),
         FontSize = 0.5,
         LineHeight = 1.4,
         TextWrapLength = 64.0,
@@ -65,7 +65,7 @@ local NexText = {
     },
     Positional = {
         Anchor = vector(0, 0, 0),
-        Direction = rotation(0, 0, 0, 1),
+        Direction = quaternion(0, 0, 0, 1),
     },
     Stack = {
         Cursor = { x = 0, y = 0 },
@@ -80,7 +80,7 @@ local NexText = {
     Printables = {}
 }
 
-function nextextInit()
+function NexText.Init()
     if ll.LinksetDataRead("NT4_Font") == "" then
         ll.OwnerSay("There is no font saved for the text renderer in Linkset Data; Have you forgotten to drop the Font Setup scripts?")
     end
@@ -105,16 +105,3 @@ function nextextInit()
 end
 
 
-
-
-
-function state_entry()
-   -- ll.Say(0, "Hello, Avatar!")
-end
-
-function touch_start(total_number)
-   -- ll.Say(0, "Touched.")
-end
-
--- Simulate the state_entry event
-state_entry()

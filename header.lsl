@@ -1,5 +1,6 @@
 // Settings
 vector Color = <1,1,1>;
+float Alpha = 1.0;
 // integer FontWeight = 400; 
 float FontSize = 0.5;
 float LineHeight = 1.4;
